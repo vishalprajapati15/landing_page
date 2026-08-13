@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MaxPoint
 
-## Getting Started
+Basic information for the MaxPoint project and a full folder structure.
 
-First, run the development server:
+**Project:** MaxPoint
+- **Framework:** Next.js (16.3.0)
+- **React:** 19.2.8
+- **Language:** TypeScript
+- **Styling / tools:** Tailwind CSS (v4), PostCSS
+
+**Quick start**
+
+Run the development server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Available npm scripts**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `dev`: `next dev`
+- `build`: `next build`
+- `start`: `next start`
+- `lint`: `eslint`
 
-## Learn More
+**Notable dependencies**
 
-To learn more about Next.js, take a look at the following resources:
+- `next` 16.3.0
+- `react` 19.2.8, `react-dom` 19.2.8
+- `tailwindcss` (v4), `@tailwindcss/postcss`
+- UI and helpers: `@base-ui/react`, `lucide-react`, `class-variance-authority`, `clsx`, `shadcn`, `tailwind-merge`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Folder structure
 
-## Deploy on Vercel
+```
+maxpoint/
+├─ .git/
+├─ .gitignore
+├─ components.json
+├─ eslint.config.mjs
+├─ next.config.ts
+├─ next-env.d.ts
+├─ package.json
+├─ package-lock.json
+├─ postcss.config.mjs
+├─ README.md
+├─ tsconfig.json
+├─ public/
+│  ├─ file.svg
+│  ├─ next.svg
+│  ├─ globe.svg
+│  ├─ window.svg
+│  └─ vercel.svg
+├─ src/
+│  ├─ app/
+│  │  ├─ favicon.ico
+│  │  ├─ globals.css
+│  │  ├─ layout.tsx
+│  │  ├─ page.tsx
+│  │  ├─ about/
+│  │  │  └─ page.tsx
+│  │  ├─ contact/
+│  │  │  └─ page.tsx
+│  │  ├─ privacy-policy/
+│  │  │  └─ page.tsx
+│  │  ├─ services/
+│  │  │  └─ page.tsx
+│  │  └─ terms/
+│  │     └─ page.tsx
+│  ├─ components/
+│  │  ├─ home/
+│  │  │  ├─ Hero.tsx
+│  │  │  ├─ HeroMetrics.tsx
+│  │  │  ├─ ServicesMarquee.tsx
+│  │  │  ├─ ServicesSection.tsx
+│  │  │  ├─ DigitalDeskCard.tsx
+│  │  │  └─ WhatsAppCTA.tsx
+│  │  ├─ layout/
+│  │  │  ├─ NavBar.tsx
+│  │  │  └─ Footer.tsx
+│  │  └─ ui/
+│  │     └─ button.tsx
+│  └─ lib/
+│     └─ utils.ts
+└─ next.config.ts
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+If you want a different layout for this README (more details, usage examples, or deployment steps), tell me which sections to expand and I will update `README.md` accordingly.
