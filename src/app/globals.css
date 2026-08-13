@@ -128,3 +128,24 @@
     @apply font-sans;
   }
 }
+
+@keyframes services-marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.services-marquee-track {
+  animation: services-marquee 30s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .services-marquee-track {
+    animation: none;
+  }
+}
