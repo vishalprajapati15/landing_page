@@ -6,12 +6,12 @@ import { Menu, X, Phone } from "lucide-react";
 
 const navigation = [
   {
-    name: "Services",
-    href: "#services",
+    name: "Home",
+    href: "/",
   },
   {
-    name: "How It Works",
-    href: "#how-it-works",
+    name: "Services",
+    href: "/services",
   },
   {
     name: "About",

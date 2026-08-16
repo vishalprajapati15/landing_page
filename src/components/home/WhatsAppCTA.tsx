@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Phone } from "lucide-react";
 
-const WHATSAPP_NUMBER = "919354095422";
+const WHATSAPP_NUMBER = "919354059422";
 
 export default function WhatsAppCTA() {
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}`;
