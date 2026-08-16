@@ -587,10 +587,9 @@ export default function ContactPage() {
               ref={infoRef}
               className={`
                 transition-all duration-700 ease-out
-                ${
-                  infoInView
-                    ? "translate-y-0 opacity-100"
-                    : "translate-y-8 opacity-0"
+                ${infoInView
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-8 opacity-0"
                 }
               `}
             >
@@ -630,10 +629,9 @@ export default function ContactPage() {
                         hover:-translate-y-1
                         hover:border-white/[0.16]
                         hover:bg-white/[0.04]
-                        ${
-                          infoInView
-                            ? "translate-y-0 opacity-100"
-                            : "translate-y-6 opacity-0"
+                        ${infoInView
+                          ? "translate-y-0 opacity-100"
+                          : "translate-y-6 opacity-0"
                         }
                       `}
                       style={{
@@ -712,10 +710,9 @@ export default function ContactPage() {
                 backdrop-blur-xl
                 transition-all duration-700 ease-out
                 sm:p-10
-                ${
-                  formInView
-                    ? "translate-y-0 opacity-100"
-                    : "translate-y-8 opacity-0"
+                ${formInView
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-8 opacity-0"
                 }
               `}
             >
@@ -755,9 +752,8 @@ export default function ContactPage() {
                   <form
                     onSubmit={handleSubmit}
                     noValidate
-                    className={`mt-10 space-y-5 ${
-                      shake ? "animate-field-shake" : ""
-                    }`}
+                    className={`mt-10 space-y-5 ${shake ? "animate-field-shake" : ""
+                      }`}
                   >
                     {/* Name */}
                     <FormField
@@ -831,10 +827,9 @@ export default function ContactPage() {
                           transition-all
                           duration-300
                           focus:bg-white/[0.04]
-                          ${
-                            errors.message
-                              ? "border-red-400/50 focus:border-red-400/60 focus:shadow-[0_0_0_4px_rgba(248,113,113,0.08)]"
-                              : "border-white/[0.10] focus:border-cyan-300/40 focus:shadow-[0_0_0_4px_rgba(34,211,238,0.08)]"
+                          ${errors.message
+                            ? "border-red-400/50 focus:border-red-400/60 focus:shadow-[0_0_0_4px_rgba(248,113,113,0.08)]"
+                            : "border-white/[0.10] focus:border-cyan-300/40 focus:shadow-[0_0_0_4px_rgba(34,211,238,0.08)]"
                           }
                         `}
                       />
@@ -929,10 +924,9 @@ export default function ContactPage() {
                   md:px-8
                   md:first:pl-0
                   md:last:border-r-0
-                  ${
-                    stripInView
-                      ? "translate-y-0 opacity-100"
-                      : "translate-y-6 opacity-0"
+                  ${stripInView
+                    ? "translate-y-0 opacity-100"
+                    : "translate-y-6 opacity-0"
                   }
                 `}
                 style={{
@@ -1037,10 +1031,9 @@ function FormField({
             transition-all
             duration-300
             focus:bg-white/[0.04]
-            ${
-              error
-                ? "border-red-400/50 focus:border-red-400/60 focus:shadow-[0_0_0_4px_rgba(248,113,113,0.08)]"
-                : "border-white/[0.10] focus:border-cyan-300/40 focus:shadow-[0_0_0_4px_rgba(34,211,238,0.08)]"
+            ${error
+              ? "border-red-400/50 focus:border-red-400/60 focus:shadow-[0_0_0_4px_rgba(248,113,113,0.08)]"
+              : "border-white/[0.10] focus:border-cyan-300/40 focus:shadow-[0_0_0_4px_rgba(34,211,238,0.08)]"
             }
           `}
         />
