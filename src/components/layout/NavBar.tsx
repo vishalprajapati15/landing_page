@@ -101,7 +101,7 @@ export default function Navbar() {
             <Link
               key={item.name}
               href={item.href}
-              className="text-sm font-medium text-[#94A3B8] transition-colors duration-200 hover:text-[#F8FAFC]"
+              className="text-lg font-medium text-[#94A3B8] transition-colors duration-200 hover:text-[#F8FAFC]"
             >
               {item.name}
             </Link>

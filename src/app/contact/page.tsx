@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useState, type FormEvent } from "react";
 import {
-  useEffect,
-  useRef,
-  useState,
-  type FormEvent,
-} from "react";
+  motion,
+  AnimatePresence,
+  useAnimationControls,
+  type Variants,
+} from "framer-motion";
 import {
   Mail,
   Phone,
@@ -20,33 +21,31 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 
-/* =========================================================
-   SCROLL-REVEAL HOOK
-========================================================= */
-function useInView<T extends HTMLElement>(threshold = 0.2) {
-  const ref = useRef<T | null>(null);
-  const [inView, setInView] = useState(false);
 
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 28 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
+  },
+};
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-          observer.disconnect();
-        }
-      },
-      { threshold }
-    );
+const staggerContainer: Variants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.09 },
+  },
+};
 
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [threshold]);
-
-  return [ref, inView] as const;
-}
+const cardItem: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
+  },
+};
 
 /* =========================================================
    FORM STATE
@@ -73,11 +72,7 @@ export default function ContactPage() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success">(
     "idle"
   );
-  const [shake, setShake] = useState(false);
-
-  const [infoRef, infoInView] = useInView<HTMLDivElement>(0.15);
-  const [formRef, formInView] = useInView<HTMLDivElement>(0.15);
-  const [stripRef, stripInView] = useInView<HTMLDivElement>(0.15);
+  const formShakeControls = useAnimationControls();
 
   function updateField(field: keyof FormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -102,8 +97,10 @@ export default function ContactPage() {
     e.preventDefault();
 
     if (!validate()) {
-      setShake(true);
-      window.setTimeout(() => setShake(false), 500);
+      formShakeControls.start({
+        x: [0, -8, 8, -8, 8, -4, 4, 0],
+        transition: { duration: 0.5 },
+      });
       return;
     }
 
@@ -123,30 +120,30 @@ export default function ContactPage() {
     {
       icon: Mail,
       label: "Email us",
-      value: "hello@maxpoint.in",
-      href: "mailto:hello@maxpoint.in",
-      glow: "bg-cyan-400/[0.08]",
+      value: "rahulmaxpoint@gmail.com",
+      href: "mailto:rahulmaxpoint@gmail.com",
+      glow: "bg-cyan-400/[0.10]",
     },
     {
       icon: Phone,
       label: "Call us",
       value: "+91 93540 59422",
       href: "tel:+919354059422",
-      glow: "bg-blue-500/[0.08]",
+      glow: "bg-blue-500/[0.10]",
     },
     {
       icon: MapPin,
       label: "Visit us",
-      value: "New Delhi, India",
+      value: "C1, C Block, Nehru Vihar, Delhi",
       href: "/contact",
-      glow: "bg-purple-500/[0.08]",
+      glow: "bg-purple-500/[0.10]",
     },
     {
       icon: Clock3,
       label: "Working hours",
-      value: "Mon – Sat, 10am – 7pm",
+      value: "Mon – Sat, 10 AM – 9 PM",
       href: "/contact",
-      glow: "bg-cyan-400/[0.08]",
+      glow: "bg-cyan-400/[0.10]",
     },
   ];
 
@@ -183,393 +180,206 @@ export default function ContactPage() {
         <div
           className="
             absolute inset-0
-            opacity-[0.025]
+            opacity-[0.035]
             [background-image:linear-gradient(rgba(255,255,255,0.8)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.8)_1px,transparent_1px)]
-            [background-size:80px_80px]
+            [background-size:56px_56px]
+            sm:[background-size:80px_80px]
           "
         />
 
-        {/* =====================================================
-            TOP LEFT BLUE SHAPE
-        ===================================================== */}
+        {/* TOP LEFT BLUE SHAPE */}
         <div
           className="
-            absolute
-            -left-[260px]
-            -top-[220px]
-            h-[620px]
-            w-[620px]
-            rotate-[18deg]
-            rounded-[35%]
-            border
-            border-cyan-300/[0.10]
-            bg-gradient-to-br
-            from-cyan-400/[0.12]
-            via-blue-500/[0.06]
-            to-transparent
+            absolute -left-[220px] -top-[200px] h-[440px] w-[440px]
+            rotate-[18deg] rounded-[35%] border border-cyan-300/[0.16]
+            bg-gradient-to-br from-cyan-400/[0.18] via-blue-500/[0.10] to-transparent
             blur-[1px]
+            sm:-left-[260px] sm:-top-[220px] sm:h-[620px] sm:w-[620px]
           "
         />
 
-        {/* Blue outer glow */}
+        {/* Blue outer glow — floating */}
+        <motion.div
+          className="
+            absolute -left-[140px] -top-[110px] h-[380px] w-[380px] rounded-full
+            bg-cyan-500/[0.18] blur-[110px]
+            sm:-left-[180px] sm:-top-[130px] sm:h-[520px] sm:w-[520px] sm:blur-[150px]
+          "
+          animate={{ x: [0, 24, 0], y: [0, -32, 0] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        />
+
+        {/* TOP RIGHT PURPLE SHAPE */}
         <div
           className="
-            absolute
-            -left-[180px]
-            -top-[130px]
-            h-[520px]
-            w-[520px]
-            rounded-full
-            bg-cyan-500/[0.12]
-            blur-[150px]
-            animate-float-a
+            absolute -right-[220px] -top-[150px] h-[420px] w-[420px]
+            rotate-[-22deg] rounded-[40%] border border-violet-400/[0.16]
+            bg-gradient-to-bl from-violet-500/[0.20] via-purple-500/[0.10] to-transparent
+            sm:-right-[280px] sm:-top-[170px] sm:h-[600px] sm:w-[600px]
           "
         />
 
-        {/* =====================================================
-            TOP RIGHT PURPLE SHAPE
-        ===================================================== */}
+        {/* Purple glow — floating */}
+        <motion.div
+          className="
+            absolute -right-[120px] top-[30px] h-[360px] w-[360px] rounded-full
+            bg-purple-600/[0.20] blur-[120px]
+            sm:-right-[150px] sm:top-[40px] sm:h-[500px] sm:w-[500px] sm:blur-[160px]
+          "
+          animate={{ x: [0, -28, 0], y: [0, 26, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        />
+
+        {/* CENTER BLUE GLOW */}
         <div
           className="
-            absolute
-            -right-[280px]
-            -top-[170px]
-            h-[600px]
-            w-[600px]
-            rotate-[-22deg]
-            rounded-[40%]
-            border
-            border-violet-400/[0.10]
-            bg-gradient-to-bl
-            from-violet-500/[0.14]
-            via-purple-500/[0.06]
-            to-transparent
+            absolute left-1/2 top-[32%] h-[420px] w-[420px] -translate-x-1/2
+            rounded-full bg-blue-600/[0.10] blur-[130px]
+            sm:h-[650px] sm:w-[650px] sm:blur-[180px]
           "
         />
 
-        {/* Purple glow */}
+        {/* CENTER DECORATIVE DIAMOND */}
         <div
           className="
-            absolute
-            -right-[150px]
-            top-[40px]
-            h-[500px]
-            w-[500px]
-            rounded-full
-            bg-purple-600/[0.13]
-            blur-[160px]
-            animate-float-b
+            absolute left-[50%] top-[42%] h-[180px] w-[180px] -translate-x-1/2
+            rotate-45 rounded-[32px] border border-white/[0.06]
+            bg-gradient-to-br from-blue-500/[0.05] via-transparent to-purple-500/[0.06]
+            sm:h-[280px] sm:w-[280px] sm:rounded-[45px]
           "
         />
 
-        {/* =====================================================
-            CENTER BLUE GLOW
-        ===================================================== */}
+        {/* RIGHT MIDDLE FLOATING SHAPE */}
         <div
           className="
-            absolute
-            left-1/2
-            top-[32%]
-            h-[650px]
-            w-[650px]
-            -translate-x-1/2
-            rounded-full
-            bg-blue-600/[0.07]
-            blur-[180px]
+            absolute -right-[140px] top-[48%] h-[300px] w-[300px]
+            rotate-[30deg] rounded-[35%] border border-blue-400/[0.09] bg-blue-500/[0.04]
+            sm:-right-[180px] sm:h-[420px] sm:w-[420px]
           "
         />
 
-        {/* =====================================================
-            CENTER DECORATIVE DIAMOND
-        ===================================================== */}
+        {/* BOTTOM LEFT PURPLE SHAPE */}
         <div
           className="
-            absolute
-            left-[50%]
-            top-[42%]
-            h-[280px]
-            w-[280px]
-            -translate-x-1/2
-            rotate-45
-            rounded-[45px]
-            border
-            border-white/[0.035]
-            bg-gradient-to-br
-            from-blue-500/[0.035]
-            via-transparent
-            to-purple-500/[0.04]
+            absolute -bottom-[260px] -left-[160px] h-[460px] w-[460px]
+            rotate-[-20deg] rounded-[40%] border border-purple-400/[0.12]
+            bg-gradient-to-tr from-purple-600/[0.13] via-blue-600/[0.06] to-transparent
+            sm:-bottom-[300px] sm:-left-[200px] sm:h-[650px] sm:w-[650px]
           "
         />
 
-        {/* =====================================================
-            RIGHT MIDDLE FLOATING SHAPE
-        ===================================================== */}
-        <div
+        {/* Bottom glow — floating */}
+        <motion.div
           className="
-            absolute
-            -right-[180px]
-            top-[48%]
-            h-[420px]
-            w-[420px]
-            rotate-[30deg]
-            rounded-[35%]
-            border
-            border-blue-400/[0.06]
-            bg-blue-500/[0.025]
+            absolute bottom-[-160px] left-[5%] h-[360px] w-[360px] rounded-full
+            bg-purple-600/[0.16] blur-[120px]
+            sm:bottom-[-200px] sm:h-[500px] sm:w-[500px] sm:blur-[160px]
           "
+          animate={{ x: [0, 18, 0], y: [0, 22, 0] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
         />
 
-        {/* =====================================================
-            BOTTOM LEFT PURPLE SHAPE
-        ===================================================== */}
-        <div
+        {/* BOTTOM RIGHT BLUE GLOW — floating */}
+        <motion.div
           className="
-            absolute
-            -bottom-[300px]
-            -left-[200px]
-            h-[650px]
-            w-[650px]
-            rotate-[-20deg]
-            rounded-[40%]
-            border
-            border-purple-400/[0.08]
-            bg-gradient-to-tr
-            from-purple-600/[0.09]
-            via-blue-600/[0.04]
-            to-transparent
+            absolute -bottom-[200px] -right-[120px] h-[400px] w-[400px] rounded-full
+            bg-cyan-500/[0.11] blur-[120px]
+            sm:-bottom-[250px] sm:-right-[150px] sm:h-[550px] sm:w-[550px] sm:blur-[160px]
           "
-        />
-
-        {/* Bottom glow */}
-        <div
-          className="
-            absolute
-            bottom-[-200px]
-            left-[5%]
-            h-[500px]
-            w-[500px]
-            rounded-full
-            bg-purple-600/[0.10]
-            blur-[160px]
-            animate-float-c
-          "
-        />
-
-        {/* =====================================================
-            BOTTOM RIGHT BLUE GLOW
-        ===================================================== */}
-        <div
-          className="
-            absolute
-            -bottom-[250px]
-            -right-[150px]
-            h-[550px]
-            w-[550px]
-            rounded-full
-            bg-cyan-500/[0.07]
-            blur-[160px]
-            animate-float-a
-          "
+          animate={{ x: [0, 24, 0], y: [0, -32, 0] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         />
       </div>
 
       {/* =========================================================
           HERO
       ========================================================= */}
-      <section className="relative min-h-[620px]">
-        <div className="mx-auto flex min-h-[620px] max-w-[1440px] items-center px-6 py-28 sm:px-10 lg:px-20">
-          <div className="relative z-10 max-w-[950px]">
+      <section className="relative">
+        <div className="mx-auto flex min-h-[520px] max-w-[1440px] items-center px-5 py-20 sm:min-h-[600px] sm:px-8 sm:py-24 lg:px-20 lg:py-28">
+          <motion.div
+            className="relative z-10 max-w-[950px]"
+            initial="hidden"
+            animate="visible"
+            variants={staggerContainer}
+          >
             {/* Eyebrow */}
-            <div
-              className="
-                reveal-up
-                mb-8
-                inline-flex
-                items-center
-                gap-3
-                rounded-full
-                border
-                border-white/[0.09]
-                bg-white/[0.025]
-                px-4
-                py-2
-                backdrop-blur-xl
-              "
+            <motion.div
+              variants={fadeUp}
+              className="mb-6 inline-flex items-center gap-3 rounded-full border border-white/[0.09] bg-white/[0.025] px-4 py-2 backdrop-blur-xl sm:mb-8"
             >
               <span className="relative flex h-2 w-2">
-                <span
-                  className="
-                    absolute
-                    inline-flex
-                    h-full
-                    w-full
-                    animate-ping
-                    rounded-full
-                    bg-cyan-400
-                    opacity-75
-                  "
+                <motion.span
+                  className="absolute inline-flex h-full w-full rounded-full bg-cyan-400"
+                  animate={{ scale: [1, 2.2], opacity: [0.75, 0] }}
+                  transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut" }}
                 />
-                <span
-                  className="
-                    relative
-                    inline-flex
-                    h-2
-                    w-2
-                    rounded-full
-                    bg-cyan-400
-                    shadow-[0_0_18px_rgba(34,211,238,0.9)]
-                  "
-                />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_18px_rgba(34,211,238,0.9)]" />
               </span>
 
-              <span className="text-[11px] font-medium uppercase tracking-[0.28em] text-white/50">
+              <span className="text-[10px] font-medium uppercase tracking-[0.24em] text-white/50 sm:text-[11px] sm:tracking-[0.28em]">
                 Get in touch
               </span>
-            </div>
+            </motion.div>
 
             {/* Main heading */}
-            <h1
-              className="
-                reveal-up
-                max-w-[1000px]
-                text-[52px]
-                font-semibold
-                leading-[0.92]
-                tracking-[-0.055em]
-                sm:text-[72px]
-                md:text-[88px]
-                lg:text-[104px]
-                xl:text-[116px]
-              "
-              style={{ animationDelay: "0.08s" }}
+            <motion.h1
+              variants={fadeUp}
+              className="max-w-[1000px] text-[38px] font-semibold leading-[1] tracking-[-0.03em] min-[420px]:text-[44px] sm:text-[64px] sm:leading-[0.95] sm:tracking-[-0.045em] md:text-[80px] lg:text-[96px] lg:tracking-[-0.055em] xl:text-[112px]"
             >
               Let&apos;s make it
               <br />
-              <span
-                className="
-                  bg-gradient-to-r
-                  from-white
-                  via-white
-                  to-white/35
-                  bg-clip-text
-                  text-transparent
-                "
-              >
+              <span className="bg-gradient-to-r from-white via-white to-white/35 bg-clip-text text-transparent">
                 simple, together.
               </span>
-            </h1>
+            </motion.h1>
 
             {/* Description */}
-            <p
-              className="
-                reveal-up
-                mt-9
-                max-w-[650px]
-                text-base
-                leading-7
-                text-white/45
-                sm:text-lg
-                sm:leading-8
-              "
-              style={{ animationDelay: "0.16s" }}
+            <motion.p
+              variants={fadeUp}
+              className="mt-6 max-w-[600px] text-sm leading-6 text-white/45 sm:mt-9 sm:max-w-[650px] sm:text-lg sm:leading-8"
             >
               Have a question, a project, or just want to say hello? Send us
               a message and our team will get back to you shortly.
-            </p>
+            </motion.p>
 
             {/* Quick contact chips */}
-            <div
-              className="reveal-up mt-10 flex flex-wrap items-center gap-4"
-              style={{ animationDelay: "0.24s" }}
+            <motion.div
+              variants={fadeUp}
+              className="mt-8 flex flex-wrap items-center gap-3 sm:mt-10 sm:gap-4"
             >
-              <a
+              <motion.a
                 href="mailto:hello@maxpoint.in"
-                className="
-                  group
-                  inline-flex
-                  items-center
-                  gap-3
-                  rounded-full
-                  bg-white
-                  px-6
-                  py-3.5
-                  text-sm
-                  font-medium
-                  text-[#090c17]
-                  transition-all
-                  duration-300
-                  hover:shadow-[0_0_45px_rgba(255,255,255,0.15)]
-                "
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                className="group inline-flex items-center gap-3 rounded-full bg-white px-5 py-3 text-sm font-medium text-[#090c17] transition-shadow duration-300 hover:shadow-[0_0_45px_rgba(255,255,255,0.15)] sm:px-6 sm:py-3.5"
               >
                 Email us
-
                 <span className="transition-transform duration-300 group-hover:translate-x-1">
                   →
                 </span>
-              </a>
+              </motion.a>
 
-              <a
-                href="tel:+919354059422"
-                className="
-                  inline-flex
-                  items-center
-                  rounded-full
-                  border
-                  border-white/[0.10]
-                  bg-white/[0.025]
-                  px-6
-                  py-3.5
-                  text-sm
-                  font-medium
-                  text-white/65
-                  backdrop-blur-xl
-                  transition-all
-                  duration-300
-                  hover:border-white/20
-                  hover:bg-white/[0.05]
-                  hover:text-white
-                "
+              <motion.a
+                href="https://wa.me/919354059422?text=Hello%20Max%20Point%20Cyber%20Cafe%2C%20I%20want%20to%20know%20more%20about%20your%20services."
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                className="inline-flex items-center rounded-full border border-white/[0.10] bg-white/[0.025] px-5 py-3 text-sm font-medium text-white/65 backdrop-blur-xl transition-all duration-300 hover:border-white/20 hover:bg-white/[0.05] hover:text-white sm:px-6 sm:py-3.5"
               >
-                Call us
-              </a>
-            </div>
-          </div>
+                WhatsApp
+              </motion.a>
+            </motion.div>
+          </motion.div>
 
           {/* Hero decorative vertical line */}
-          <div
-            className="
-              absolute
-              right-[12%]
-              top-[28%]
-              hidden
-              h-[300px]
-              w-px
-              bg-gradient-to-b
-              from-transparent
-              via-cyan-400/20
-              to-transparent
-              lg:block
-            "
-          />
+          <div className="absolute right-[12%] top-[28%] hidden h-[300px] w-px bg-gradient-to-b from-transparent via-cyan-400/20 to-transparent lg:block" />
 
           {/* Floating small diamond */}
-          <div
-            className="
-              absolute
-              right-[11%]
-              top-[42%]
-              hidden
-              h-16
-              w-16
-              rotate-45
-              rounded-xl
-              border
-              border-cyan-300/10
-              bg-cyan-400/[0.025]
-              shadow-[0_0_80px_rgba(34,211,238,0.08)]
-              lg:block
-              animate-float-c
-            "
+          <motion.div
+            className="absolute right-[11%] top-[42%] hidden h-16 w-16 rotate-45 rounded-xl border border-cyan-300/10 bg-cyan-400/[0.025] shadow-[0_0_80px_rgba(34,211,238,0.08)] lg:block"
+            animate={{ y: [0, -16, 0] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
           />
         </div>
       </section>
@@ -578,311 +388,231 @@ export default function ContactPage() {
           CONTACT INFO + FORM
       ========================================================= */}
       <section className="relative border-y border-white/[0.06]">
-        <div className="mx-auto max-w-[1440px] px-6 py-28 sm:px-10 lg:px-20 lg:py-36">
-          <div className="grid gap-14 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+        <div className="mx-auto max-w-[1440px] px-5 py-20 sm:px-8 sm:py-28 lg:px-20 lg:py-36">
+          <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
             {/* =====================================================
                 LEFT — CONTACT INFO
             ===================================================== */}
-            <div
-              ref={infoRef}
-              className={`
-                transition-all duration-700 ease-out
-                ${infoInView
-                  ? "translate-y-0 opacity-100"
-                  : "translate-y-8 opacity-0"
-                }
-              `}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              variants={staggerContainer}
             >
-              <span className="text-[11px] font-medium uppercase tracking-[0.28em] text-cyan-400/70">
+              <motion.span
+                variants={cardItem}
+                className="text-[10px] font-medium uppercase tracking-[0.24em] text-cyan-400/70 sm:text-[11px] sm:tracking-[0.28em]"
+              >
                 Contact details
-              </span>
+              </motion.span>
 
-              <h2 className="mt-6 text-4xl font-semibold leading-[1] tracking-[-0.045em] sm:text-5xl">
+              <motion.h2
+                variants={cardItem}
+                className="mt-5 text-3xl font-semibold leading-[1.05] tracking-[-0.035em] sm:mt-6 sm:text-4xl sm:leading-[1] sm:tracking-[-0.045em] lg:text-5xl"
+              >
                 Reach us
                 <br />
                 <span className="text-white/30">however works for you.</span>
-              </h2>
+              </motion.h2>
 
-              <p className="mt-7 max-w-[420px] text-base leading-7 text-white/40">
+              <motion.p
+                variants={cardItem}
+                className="mt-5 max-w-[420px] text-sm leading-6 text-white/40 sm:mt-7 sm:text-base sm:leading-7"
+              >
                 Whether it&apos;s a quick question or a full project brief,
                 pick whatever channel suits you best.
-              </p>
+              </motion.p>
 
-              <div className="mt-12 grid gap-4 sm:grid-cols-2">
-                {contactDetails.map((item, index) => {
+              <div className="mt-10 grid gap-4 sm:mt-12 sm:grid-cols-2">
+                {contactDetails.map((item) => {
                   const Icon = item.icon;
                   return (
-                    <a
+                    <motion.a
                       key={item.label}
                       href={item.href}
-                      className={`
-                        group
-                        relative
-                        overflow-hidden
-                        rounded-2xl
-                        border
-                        border-white/[0.08]
-                        bg-white/[0.02]
-                        p-6
-                        transition-all
-                        duration-500
-                        hover:-translate-y-1
-                        hover:border-white/[0.16]
-                        hover:bg-white/[0.04]
-                        ${infoInView
-                          ? "translate-y-0 opacity-100"
-                          : "translate-y-6 opacity-0"
-                        }
-                      `}
-                      style={{
-                        transitionDelay: infoInView
-                          ? `${index * 90}ms`
-                          : "0ms",
-                        transitionProperty:
-                          "transform, opacity, background-color, border-color",
-                      }}
+                      variants={cardItem}
+                      whileHover={{ y: -4 }}
+                      className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5 transition-colors duration-500 hover:border-white/[0.16] hover:bg-white/[0.04] sm:p-6"
                     >
                       <div
-                        className={`
-                          absolute
-                          -right-10
-                          -top-10
-                          h-32
-                          w-32
-                          rounded-full
-                          ${item.glow}
-                          opacity-0
-                          blur-[70px]
-                          transition-opacity
-                          duration-700
-                          group-hover:opacity-100
-                        `}
+                        className={`absolute -right-10 -top-10 h-32 w-32 rounded-full ${item.glow} opacity-0 blur-[70px] transition-opacity duration-700 group-hover:opacity-100`}
                       />
 
-                      <div
-                        className="
-                          relative
-                          inline-flex
-                          h-10
-                          w-10
-                          items-center
-                          justify-center
-                          rounded-full
-                          border
-                          border-white/[0.10]
-                          bg-white/[0.03]
-                          text-white/70
-                          transition-colors
-                          duration-300
-                          group-hover:border-cyan-300/30
-                          group-hover:text-cyan-300
-                        "
-                      >
+                      <div className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/[0.10] bg-white/[0.03] text-white/70 transition-colors duration-300 group-hover:border-cyan-300/30 group-hover:text-cyan-300">
                         <Icon className="h-4 w-4" />
                       </div>
 
-                      <p className="relative mt-5 text-xs uppercase tracking-[0.18em] text-white/30">
+                      <p className="relative mt-4 text-[11px] uppercase tracking-[0.16em] text-white/30 sm:mt-5 sm:text-xs sm:tracking-[0.18em]">
                         {item.label}
                       </p>
 
                       <p className="relative mt-2 text-sm font-medium text-white/80">
                         {item.value}
                       </p>
-                    </a>
+                    </motion.a>
                   );
                 })}
               </div>
-            </div>
+            </motion.div>
 
             {/* =====================================================
                 RIGHT — FORM CARD
             ===================================================== */}
-            <div
-              ref={formRef}
-              className={`
-                relative
-                overflow-hidden
-                rounded-[28px]
-                border
-                border-white/[0.08]
-                bg-white/[0.02]
-                p-8
-                backdrop-blur-xl
-                transition-all duration-700 ease-out
-                sm:p-10
-                ${formInView
-                  ? "translate-y-0 opacity-100"
-                  : "translate-y-8 opacity-0"
-                }
-              `}
+            <motion.div
+              initial={{ opacity: 0, y: 32 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              className="relative overflow-hidden rounded-[24px] border border-white/[0.08] bg-white/[0.02] p-6 backdrop-blur-xl sm:rounded-[28px] sm:p-8 lg:p-10"
             >
               {/* Card glow */}
               <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-blue-500/[0.10] blur-[110px]" />
               <div className="pointer-events-none absolute -bottom-24 -left-16 h-56 w-56 rounded-full bg-purple-500/[0.08] blur-[110px]" />
 
               <div className="relative">
-                <span className="text-[11px] font-medium uppercase tracking-[0.28em] text-purple-400/70">
+                <span className="text-[10px] font-medium uppercase tracking-[0.24em] text-purple-400/70 sm:text-[11px] sm:tracking-[0.28em]">
                   Send a message
                 </span>
 
-                <h3 className="mt-4 text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+                <h3 className="mt-3 text-xl font-semibold tracking-[-0.02em] sm:mt-4 sm:text-2xl lg:text-3xl">
                   Tell us what you need.
                 </h3>
 
-                <p className="mt-3 max-w-[440px] text-sm leading-6 text-white/40">
+                <p className="mt-3 max-w-[440px] text-sm leading-6 text-white/60">
                   Fill out the form below and we&apos;ll get back to you as
                   soon as possible.
                 </p>
 
-                {/* ================= SUCCESS STATE ================= */}
-                {status === "success" ? (
-                  <div className="animate-success-pop mt-10 flex flex-col items-center gap-4 rounded-2xl border border-cyan-300/20 bg-cyan-400/[0.05] px-6 py-14 text-center">
-                    <span className="inline-flex h-14 w-14 items-center justify-center rounded-full border border-cyan-300/30 bg-cyan-400/10">
-                      <CheckCircle2 className="h-7 w-7 text-cyan-300" />
-                    </span>
-                    <h4 className="text-xl font-medium text-white">
-                      Message sent!
-                    </h4>
-                    <p className="max-w-[320px] text-sm leading-6 text-white/45">
-                      Thanks for reaching out. Our team will get back to you
-                      shortly.
-                    </p>
-                  </div>
-                ) : (
-                  <form
-                    onSubmit={handleSubmit}
-                    noValidate
-                    className={`mt-10 space-y-5 ${shake ? "animate-field-shake" : ""
-                      }`}
-                  >
-                    {/* Name */}
-                    <FormField
-                      id="name"
-                      label="Name"
-                      icon={User}
-                      value={form.name}
-                      onChange={(v) => updateField("name", v)}
-                      placeholder="Your full name"
-                      error={errors.name}
-                      errorMessage="Please enter your name"
-                      required
-                    />
-
-                    {/* Email */}
-                    <FormField
-                      id="email"
-                      type="email"
-                      label="Email"
-                      icon={Mail}
-                      value={form.email}
-                      onChange={(v) => updateField("email", v)}
-                      placeholder="you@example.com"
-                      error={errors.email}
-                      errorMessage="Please enter a valid email"
-                      required
-                    />
-
-                    {/* Subject */}
-                    <FormField
-                      id="subject"
-                      label="Subject"
-                      icon={MessageSquare}
-                      value={form.subject}
-                      onChange={(v) => updateField("subject", v)}
-                      placeholder="What is this about?"
-                      error={errors.subject}
-                      errorMessage="Please enter a subject"
-                      required
-                    />
-
-                    {/* Message */}
-                    <div>
-                      <label
-                        htmlFor="message"
-                        className="mb-2 block text-xs font-medium uppercase tracking-[0.14em] text-white/40"
-                      >
-                        Message <span className="text-cyan-400">*</span>
-                      </label>
-                      <textarea
-                        id="message"
-                        required
-                        rows={5}
-                        value={form.message}
-                        onChange={(e) =>
-                          updateField("message", e.target.value)
-                        }
-                        placeholder="Tell us a little more about what you need..."
-                        className={`
-                          w-full
-                          resize-none
-                          rounded-2xl
-                          border
-                          bg-white/[0.02]
-                          px-4
-                          py-3.5
-                          text-sm
-                          text-white
-                          placeholder:text-white/25
-                          outline-none
-                          transition-all
-                          duration-300
-                          focus:bg-white/[0.04]
-                          ${errors.message
-                            ? "border-red-400/50 focus:border-red-400/60 focus:shadow-[0_0_0_4px_rgba(248,113,113,0.08)]"
-                            : "border-white/[0.10] focus:border-cyan-300/40 focus:shadow-[0_0_0_4px_rgba(34,211,238,0.08)]"
-                          }
-                        `}
-                      />
-                      {errors.message && (
-                        <p className="mt-2 text-xs text-red-400/80">
-                          Please enter a message
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Submit */}
-                    <button
-                      type="submit"
-                      disabled={status === "submitting"}
-                      className="
-                        group
-                        mt-2
-                        inline-flex
-                        w-full
-                        items-center
-                        justify-center
-                        gap-3
-                        rounded-full
-                        bg-white
-                        px-6
-                        py-3.5
-                        text-sm
-                        font-medium
-                        text-[#090c17]
-                        transition-all
-                        duration-300
-                        hover:shadow-[0_0_45px_rgba(255,255,255,0.15)]
-                        disabled:cursor-not-allowed
-                        disabled:opacity-70
-                        sm:w-auto
-                      "
+                <AnimatePresence mode="wait">
+                  {status === "success" ? (
+                    /* ================= SUCCESS STATE ================= */
+                    <motion.div
+                      key="success"
+                      initial={{ opacity: 0, scale: 0.85 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                      className="mt-8 flex flex-col items-center gap-4 rounded-2xl border border-cyan-300/20 bg-cyan-400/[0.05] px-6 py-12 text-center sm:mt-10 sm:py-14"
                     >
-                      {status === "submitting" ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          Sending...
-                        </>
-                      ) : (
-                        <>
-                          Send message
-                          <Send className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-0.5" />
-                        </>
-                      )}
-                    </button>
-                  </form>
-                )}
+                      <motion.span
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.15, type: "spring", stiffness: 200, damping: 14 }}
+                        className="inline-flex h-14 w-14 items-center justify-center rounded-full border border-cyan-300/30 bg-cyan-400/10"
+                      >
+                        <CheckCircle2 className="h-7 w-7 text-cyan-300" />
+                      </motion.span>
+                      <h4 className="text-lg font-medium text-white sm:text-xl">
+                        Message sent!
+                      </h4>
+                      <p className="max-w-[320px] text-sm leading-6 text-white/45">
+                        Thanks for reaching out. Our team will get back to you
+                        shortly.
+                      </p>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="form"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="mt-8 sm:mt-10"
+                    >
+                      <motion.form
+                        onSubmit={handleSubmit}
+                        noValidate
+                        animate={formShakeControls}
+                        className="space-y-5"
+                      >
+                        <FormField
+                          id="name"
+                          label="Name"
+                          icon={User}
+                          value={form.name}
+                          onChange={(v) => updateField("name", v)}
+                          placeholder="Your full name"
+                          error={errors.name}
+                          errorMessage="Please enter your name"
+                          required
+                        />
+
+                        <FormField
+                          id="email"
+                          type="email"
+                          label="Email"
+                          icon={Mail}
+                          value={form.email}
+                          onChange={(v) => updateField("email", v)}
+                          placeholder="you@example.com"
+                          error={errors.email}
+                          errorMessage="Please enter a valid email"
+                          required
+                        />
+
+                        <FormField
+                          id="subject"
+                          label="Subject"
+                          icon={MessageSquare}
+                          value={form.subject}
+                          onChange={(v) => updateField("subject", v)}
+                          placeholder="What is this about?"
+                          error={errors.subject}
+                          errorMessage="Please enter a subject"
+                          required
+                        />
+
+                        <div>
+                          <label
+                            htmlFor="message"
+                            className="mb-2 block text-sm font-medium uppercase tracking-[0.14em] text-white/60"
+                          >
+                            Message <span className="text-cyan-400">*</span>
+                          </label>
+                          <textarea
+                            id="message"
+                            required
+                            rows={5}
+                            value={form.message}
+                            onChange={(e) => updateField("message", e.target.value)}
+                            placeholder="Tell us a little more about what you need..."
+                            className={`w-full resize-none rounded-2xl border bg-white/[0.02] px-4 py-3.5 text-sm text-white placeholder:text-white/25 outline-none transition-all duration-300 focus:bg-white/[0.04] ${errors.message
+                              ? "border-red-400/50 focus:border-red-400/60 focus:shadow-[0_0_0_4px_rgba(248,113,113,0.08)]"
+                              : "border-white/[0.10] focus:border-cyan-300/40 focus:shadow-[0_0_0_4px_rgba(34,211,238,0.08)]"
+                              }`}
+                          />
+                          {errors.message && (
+                            <p className="mt-2 text-xs text-red-400/80">
+                              Please enter a message
+                            </p>
+                          )}
+                        </div>
+
+                        <motion.button
+                          type="submit"
+                          disabled={status === "submitting"}
+                          whileHover={{ y: -2 }}
+                          whileTap={{ scale: 0.98 }}
+                          className="group mt-2 inline-flex w-full items-center justify-center gap-3 rounded-full cursor-pointer bg-white px-6 py-3.5 text-sm font-medium text-[#090c17] transition-shadow duration-300 hover:shadow-[0_0_45px_rgba(255,255,255,0.15)] disabled:cursor-not-allowed disabled:opacity-70"
+                        >
+                          {status === "submitting" ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              Sending...
+                            </>
+                          ) : (
+                            <>
+                              Send message
+                              <Send className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-0.5" />
+                            </>
+                          )}
+                        </motion.button>
+                      </motion.form>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -890,77 +620,40 @@ export default function ContactPage() {
       {/* =========================================================
           STATS / STRIP
       ========================================================= */}
-      <section
-        ref={stripRef}
-        className="relative overflow-hidden border-b border-white/[0.06]"
-      >
-        {/* Background shape */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            left-1/2
-            top-1/2
-            h-[500px]
-            w-[500px]
-            -translate-x-1/2
-            -translate-y-1/2
-            rounded-full
-            bg-blue-500/[0.05]
-            blur-[150px]
-          "
-        />
+      <section className="relative overflow-hidden border-b border-white/[0.06]">
+        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500/[0.05] blur-[150px]" />
 
-        <div className="relative mx-auto max-w-[1440px] px-6 py-20 sm:px-10 lg:px-20">
-          <div className="grid grid-cols-2 gap-y-12 md:grid-cols-4 md:gap-0">
-            {strip.map((item, index) => (
-              <div
+        <div className="relative mx-auto max-w-[1440px] px-5 py-16 sm:px-8 sm:py-20 lg:px-20">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={staggerContainer}
+            className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-y-12 md:grid-cols-4 md:gap-0"
+          >
+            {strip.map((item) => (
+              <motion.div
                 key={item.value}
-                className={`
-                  border-white/[0.07]
-                  px-5
-                  transition-all duration-700 ease-out
-                  md:border-r
-                  md:px-8
-                  md:first:pl-0
-                  md:last:border-r-0
-                  ${stripInView
-                    ? "translate-y-0 opacity-100"
-                    : "translate-y-6 opacity-0"
-                  }
-                `}
-                style={{
-                  transitionDelay: stripInView ? `${index * 100}ms` : "0ms",
-                }}
+                variants={cardItem}
+                className="border-white/[0.07] px-1 sm:px-5 md:border-r md:px-8 md:first:pl-0 md:last:border-r-0"
               >
-                <span className="text-xs text-white/20">{item.value}</span>
+                <span className="text-white/20">{item.value}</span>
 
-                <h3 className="mt-4 text-sm font-medium text-white/75">
+                <h3 className="mt-3 text-lg font-medium text-white/75 sm:mt-4">
                   {item.title}
                 </h3>
 
-                <p className="mt-2 max-w-[210px] text-xs leading-5 text-white/30">
+                <p className="mt-2 max-w-[210px] text-sm leading-5 text-white/30">
                   {item.text}
                 </p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
-          <div className="mt-14 flex justify-center">
+          <div className="mt-12 flex justify-center sm:mt-14">
             <Link
               href="/services"
-              className="
-                group
-                inline-flex
-                items-center
-                gap-2
-                text-sm
-                font-medium
-                text-white/50
-                transition-colors
-                duration-300
-                hover:text-white
-              "
+              className="group inline-flex items-center gap-2 text-lg font-medium text-white/50 transition-colors duration-300 hover:text-white"
             >
               Or explore what we offer
               <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
@@ -1002,7 +695,7 @@ function FormField({
     <div>
       <label
         htmlFor={id}
-        className="mb-2 block text-xs font-medium uppercase tracking-[0.14em] text-white/40"
+        className="mb-2 block text-sm font-medium uppercase tracking-[0.14em] text-white/60"
       >
         {label} {required && <span className="text-cyan-400">*</span>}
       </label>
@@ -1016,26 +709,10 @@ function FormField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className={`
-            w-full
-            rounded-full
-            border
-            bg-white/[0.02]
-            py-3.5
-            pl-11
-            pr-4
-            text-sm
-            text-white
-            placeholder:text-white/25
-            outline-none
-            transition-all
-            duration-300
-            focus:bg-white/[0.04]
-            ${error
-              ? "border-red-400/50 focus:border-red-400/60 focus:shadow-[0_0_0_4px_rgba(248,113,113,0.08)]"
-              : "border-white/[0.10] focus:border-cyan-300/40 focus:shadow-[0_0_0_4px_rgba(34,211,238,0.08)]"
-            }
-          `}
+          className={`w-full rounded-full border bg-white/[0.02] py-3.5 pl-11 pr-4 text-sm text-white placeholder:text-white/25 outline-none transition-all duration-300 focus:bg-white/[0.04] ${error
+            ? "border-red-400/50 focus:border-red-400/60 focus:shadow-[0_0_0_4px_rgba(248,113,113,0.08)]"
+            : "border-white/[0.10] focus:border-cyan-300/40 focus:shadow-[0_0_0_4px_rgba(34,211,238,0.08)]"
+            }`}
         />
       </div>
 
