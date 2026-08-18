@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://your-domain.com"),
+  metadataBase: new URL("https://maxpointdev-mu.vercel.app"),
 
   title: {
     default: "MAX POINT Cyber Cafe | Digital Services in Nehru Vihar, Delhi",
