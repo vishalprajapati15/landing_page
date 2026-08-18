@@ -1,19 +1,19 @@
 export default function LocalBusinessSchema() {
   const schema = {
-    "@context": "https://schema.org",
+    "@context": "https://maxpointdev-mu.vercel.app/",
     "@type": "LocalBusiness",
-    "@id": "https://your-domain.com/#business",
+    "@id": "https://maxpointdev-mu.vercel.app/#services",
 
     name: "MAX POINT Cyber Cafe",
 
     description:
       "MAX POINT Cyber Cafe provides government form filling, digital services, tax filing, printing, PDF editing, website design, WhatsApp automation and other online services in Nehru Vihar, Delhi.",
 
-    url: "https://your-domain.com",
+    url: "https://maxpointdev-mu.vercel.app/",
 
-    telephone: "+91-YOUR-PHONE",
+    telephone: "+91 9354059422",
 
-    image: "https://your-domain.com/og-image.jpg",
+    image: "https://maxpointdev-mu.vercel.app/",
 
     address: {
       "@type": "PostalAddress",
